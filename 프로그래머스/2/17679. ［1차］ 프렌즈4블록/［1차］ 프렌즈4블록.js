@@ -1,90 +1,66 @@
-// dfs, 대문자
-function isValidIndex(r, c, arr) {
-  return r >= 0 && r < arr.length && c >= 0 && c < arr[r].length; /////
-}
-
-function isSquareSame(r, c, arr) {
-  const right = { r, c: c + 1 };
-  const rightDown = { r: r + 1, c: c + 1 };
-  const down = { r: r + 1, c };
-  if (
-    isValidIndex(right.r, right.c, arr) &&
-    isValidIndex(rightDown.r, rightDown.c, arr) &&
-    isValidIndex(down.r, down.c, arr)
-  ) {
-    return (
-      arr[r][c] === arr[right.r][right.c] &&
-      arr[right.r][right.c] === arr[rightDown.r][rightDown.c] &&
-      arr[right.r][right.c] === arr[down.r][down.c]
-    );
-  }
-  return false;
-}
-
 function solution(m, n, board) {
-  let answer = 0;
-  const newBoard = [];
-  const UPPERCASE = /[A-Z]/;
-  board = board.reverse();
-  // board를 왼쪽에서 오른쪽으로 떨이지게 재배열
-  for (let c = 0; c < n; c++) {
-    let newRow = [];
-    for (let r = 0; r < m; r++) {
-      newRow.push(board[r][c]);
+    var answer = 0;
+    board = convertBoard(board)
+    while(checkHasMatch(m, n, board)) {
+        answer += findMatchCount(m, n, board);
     }
-    newBoard.push(newRow);
-  }
-  let isRemoved = Array.from({ length: newBoard.length }, () =>
-    Array.from({ length: newBoard[0].length }, () => false)
-  );
-  const square = [
-    [0, 0],
-    [0, 1],
-    [1, 0],
-    [1, 1],
-  ];
-  findSquare(newBoard);
+    return answer;
+}
 
-  function findSquare(newBoard) {
-    let isRemovedThisTime = false;
-    // 순회하며 2x2찾기
-    for (let r = 0; r < newBoard.length - 1; r++) {
-      for (let c = 0; c < newBoard[r].length - 1; c++) {
-        if (!newBoard[r][c]) break;
-        if (!UPPERCASE.test(newBoard[r][c])) continue;
+function convertBoard(board) {
+    return board.map(row => {
+        const arr = [];
+        for (let i = 0; i < row.length; i++) {
+            arr.push(row.charCodeAt(i));
+        }
+        return arr;
+    });
+}
 
-        if (isSquareSame(r, c, newBoard)) {
-          for (const [dr, dc] of square) {
-            if (!isRemoved[r + dr][c + dc]) {
-              isRemovedThisTime = true;
-              isRemoved[r + dr][c + dc] = true;
-              answer++;
+function checkHasMatch(m, n, board) {
+    let hasMatch = false;
+    for (let r = 1; r < m; ++r) {
+        for (let c = 1; c < n; ++c) {
+            const block1 = board[r][c];
+            const block2 = board[r][c-1];
+            const block3 = board[r-1][c-1];
+            const block4 = board[r-1][c];
+            if (
+                block1 !== 0 &&
+                (block1 === block2 || block1 === -block2) &&
+                (block2 === block3 || block2 === -block3) &&
+                (block3 === block4 || block3 === -block4)
+            ) {
+                hasMatch = true;
+                board[r][c] = -block1;
+                board[r][c-1] = -block1;
+                board[r-1][c-1] = -block1;
+                board[r-1][c] = -block1;
             }
-          }
         }
-      }
     }
-    // 제거된게 있으면 true제거하고 또 스캔
-    if (isRemovedThisTime) {
-      // true 제거
-      const afterRemoveBoard = [];
-      for (let r = 0; r < newBoard.length; r++) {
-        const temp = [];
-        let removedCount = 0;
-        for (let c = 0; c < newBoard[r].length; c++) {
-          if (!isRemoved[r][c]) {
-            temp.push(newBoard[r][c]);
-          } else {
-            removedCount++;
-          }
+    return hasMatch;
+}
+
+function findMatchCount(m, n, board) {
+    let matchedCount = 0;
+    for (let c = 0; c < n; c++) {
+        let p2 = m-1;
+        for (let p1 = m-1; p1 >= 0; --p1) {
+            // 매칭이 안 됐다
+            if (board[p1][c] > 0) {
+                board[p2][c] = board[p1][c]; // 매칭이 안 된 블록을 p2 위치로 내려준다
+                p2--;
+            } 
+            // 매칭이 됐다
+            else if (board[p1][c] < 0) {
+                matchedCount++;
+            }
         }
-        afterRemoveBoard[r] = temp;
-      }
-      isRemoved = isRemoved.map((row) => row.filter((c) => c === false));
-      findSquare(afterRemoveBoard);
-    } else {
-      return;
+        while(p2 >= 0) {
+            board[p2][c] = 0; // 빈공간
+            p2--;
+        }
     }
-  }
-  return answer;
+    return matchedCount;
 }
