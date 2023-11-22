@@ -1,30 +1,17 @@
 function solution(priorities, location) {
     var answer = 0;
-    const hash = {}; // {순위: 갯수} 순위비교
-    priorities.forEach(p => hash[p] = (hash[p] || 0) + 1);
-    const queue = priorities.map((p, i) => ({p, i})); // {p: 순위, i: location}
-    let foundTarget = false;
+    priorities = priorities.map((priority, i) => ({priority, location: i}));
     
-    function getMaxPriority() {
-        return Math.max(...Object.keys(hash));
-    }
-    
-    //  location을 찾을때까지
-    while(queue.length && !foundTarget) {
-        const {p, i} = queue[0];
-        // 현재순위가 최상순위일때 삭제
-        if (p === getMaxPriority()) {
-            // 1개 일때
-            if (hash[p] === 1) {
-                delete hash[p];
-            } else {
-                hash[p] -= 1;
-            }
+    while(priorities.length) {
+        const curr = priorities.shift();
+        // 현재보다 우선순위가 없을시
+        if (!priorities.some(p => p.priority > curr.priority)) {
             answer++;
-            queue.shift();
-            if (i === location) foundTarget = true;
+            if (curr.location === location) {
+                return answer;
+            }
         } else {
-            queue.push(queue.shift());
+            priorities.push(curr);
         }
     }
     return answer;
