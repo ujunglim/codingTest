@@ -1,67 +1,3 @@
-class Heapq {
-  constructor() {
-    this.heap = [null];
-  }
-
-  heappush(data) {
-    const [intensity, node] = data;
-    let current = this.heap.length;
-    while (current > 1) {
-      const parent = Math.floor(current / 2);
-      if (this.heap[parent].intensity > intensity) {
-        this.heap[current] = this.heap[parent];
-        current = parent;
-      } else {
-        break;
-      }
-    }
-    this.heap[current] = { intensity: intensity, node: node };
-  }
-
-  heappop() {
-    let min = this.heap[1];
-
-    if (this.heap.length > 2) {
-      this.heap[1] = this.heap[this.heap.length - 1];
-      this.heap.splice(this.heap.length - 1);
-
-      let current = 1;
-      let leftChildIndex = current * 2;
-      let rightChildIndex = current * 2 + 1;
-
-      while (this.heap[leftChildIndex]) {
-        let childIndexToCompare = leftChildIndex;
-        if (
-          this.heap[rightChildIndex] &&
-          this.heap[rightChildIndex].intensity <
-            this.heap[childIndexToCompare].intensity
-        ) {
-          childIndexToCompare = rightChildIndex;
-        }
-        if (
-          this.heap[current].intensity >
-          this.heap[childIndexToCompare].intensity
-        ) {
-          [this.heap[current], this.heap[childIndexToCompare]] = [
-            this.heap[childIndexToCompare],
-            this.heap[current],
-          ];
-          current = childIndexToCompare;
-        } else {
-          break;
-        }
-        leftChildIndex = current * 2;
-        rightChildIndex = current * 2 + 1;
-      }
-    } else if (this.heap.length === 2) {
-      this.heap.splice(1, 1);
-    } else {
-      return null;
-    }
-    return min;
-  }
-}
-
 // 작은intensity 순으로 정렬하는 minHeap
 class MinHeap {
   constructor() {
@@ -75,10 +11,9 @@ class MinHeap {
     // 부모노드가 존재할때 현재노드의 제 위치를 찾는다
     while (currIndex > 1) {
       const parentIndex = Math.floor(currIndex / 2);
-      // 부모 > 현재이면 둘을 swap
+      // 부모 > 현재이면 swap
       if (this.heap[parentIndex].intensity > intensity) {
-        //////////////////// swap
-        this.heap[currIndex] = this.heap[parentIndex];
+        [this.heap[currIndex], this.heap[parentIndex]] = [this.heap[parentIndex], this.heap[currIndex]]
         currIndex = parentIndex;
       } else {
         break;
@@ -176,6 +111,7 @@ function solution(n, paths, gates, summits) {
       continue;
     }
 
+    // 이웃 노드를 순회하며 가중치를 비교한다.
     graph[node].forEach(({ nextIntensity, nextNode }) => {
       const newIntensity = Math.max(currIntensity, nextIntensity); // 현재 가중치, 새로운 가중치 비교
       // 새로운 가중치가 기존보다 작으면 가중치 갱신하고 큐에 넣는다
@@ -195,4 +131,3 @@ function solution(n, paths, gates, summits) {
   });
   return answer;
 }
-
