@@ -21,8 +21,4 @@ function getSum(n) {
   return (n % 10) + getSum(Math.floor(n / 10));
 }
 
-function getSum(n) {
-  if (n < 10) return n;
-  return (n % 10) + getSum(Math.floor(n / 10));
-}
 solution();
