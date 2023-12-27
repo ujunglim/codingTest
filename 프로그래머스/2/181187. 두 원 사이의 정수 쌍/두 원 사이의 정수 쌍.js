@@ -1,23 +1,14 @@
+// 원의 4분의1 안의 갯수를 구한다.
 function solution(r1, r2) {
     var answer = 0;
-    const minPow = Math.pow(r1, 2);
-    const maxPow = Math.pow(r2, 2);
+    const r1Pow = r1*r1;
+    const r2Pow = r2*r2;
     
-    function getYMax(x) {
-        return Math.floor(Math.sqrt(maxPow-x));
+    for (let x = 1; x <= r2; x++) {
+        const currPow = x*x;
+        const maxY = Math.floor(Math.sqrt(r2Pow - currPow));
+        const minY = x < r1 ? Math.ceil(Math.sqrt(r1Pow - currPow)) : 0;
+        answer += maxY - minY + 1;
     }
-    
-    function getYMin(x) {
-        if (minPow-x < 0) return 0;
-        return Math.ceil(Math.sqrt(minPow-x));
-    }
-    for (let x = 0; x <= r2; ++x) {
-        const currXPow = Math.pow(x, 2);
-        const maxY = getYMax(currXPow);
-        const minY = getYMin(currXPow);
-        answer += maxY-minY+1;
-    }
-    answer *= 4;
-    const common = (r2-r1+1)*4;
-    return answer - common;
+    return answer*4;
 }
