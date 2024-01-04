@@ -50,7 +50,7 @@ function solution(board) {
     Array.from({ length: maxC }, () => false)
   );
   isVisited[start.r][start.c] = true;
-  const queue = [{ r: start.r, c: start.c, step: 0, isVisited }];
+  const queue = [{ r: start.r, c: start.c, step: 0 }];
 
   while (queue.length) {
     // console.log("----", queue);
@@ -75,7 +75,7 @@ function solution(board) {
       }
       if (!isVisited[currR][currC]) {
         isVisited[currR][currC] = true;
-        queue.push({ r: currR, c: currC, step: step + 1, isVisited });
+        queue.push({ r: currR, c: currC, step: step + 1 });
       }
     }
   }
