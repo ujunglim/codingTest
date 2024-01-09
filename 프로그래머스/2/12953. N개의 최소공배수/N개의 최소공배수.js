@@ -1,18 +1,18 @@
 function solution(arr) {
-    arr.sort((a, b) => a-b);
-    let lcm = 1;
+    var lcm = 1;
     
-    for (let i = 0; i < arr.length; ++i) {
-        lcm = getLCM(lcm, arr[i]);  // 이전 최소공배수와 현재값의 최소공배수
+    for (const a of arr) {
+        lcm = getLCM(lcm, a);
     }
     return lcm;
 }
 
 function getGCD(a, b) {
-    if (b === 0) return a;
-    return getGCD(b, a%b);
+    const remain = a % b;
+    if (remain === 0) return b;
+    return getGCD(b, remain);
 }
 
 function getLCM(a, b) {
-    return a*b/getGCD(a, b);
+    return a*b/getGCD(a,b);
 }
