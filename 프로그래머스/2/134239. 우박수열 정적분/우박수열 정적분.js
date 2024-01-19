@@ -1,35 +1,43 @@
+// k자연수
+// 짝수이면 /2
+// 홀수이면 *3+1
+// 결과가 1보다 크면 위 작업을 반복
+// 정적분 = 공간면적
+// n은 1이 될때까지의 횟수
+// 시작점 > 끝점인 경우엔 -1
+// 구간 [a, b]에서 b가 음수인경우는 k+b번째까지의 구간이라는 뜻 5+(-2) = 3
+
+// k가 1이 될때까지 그래프를 정리하고 각 구간마다 정적분 정리
 function solution(k, ranges) {
     var answer = [];
-    const arr = [[0, k]]
-    let count = 1;
-    
-    while(k > 1) {
-        if (k % 2 === 0) {
-            k /= 2;
+    const results = [k];
+    let result = k;
+    while(result > 1) {
+        if (result % 2 === 0) {
+            result /= 2;
         } else {
-            k = k*3+1;
+            result = result*3+1;
         }
-        arr.push([count, k]);
-        count++;
+        results.push(result);
     }
-    
-    // 각 구역마다 넓이 구하기
+    // console.log(results)
     const areas = [];
-    for (let i = 0; i < arr.length-1; ++i) {
-        const leftLine = arr[i][1];
-        const rightLine = arr[i+1][1];
-        areas.push((leftLine + rightLine) / 2);
+    for (let i = 0; i < results.length-1; i++) {
+        const area = (results[i] + results[i+1])/2;
+        areas.push(area);
     }
-    const len = areas.length;
-    for (const [startI, endI] of ranges) {
-        const endIndex = len + endI;
-        if (startI > endIndex) {
+    // console.log(areas)
+    
+    for (let [start, end] of ranges) {
+        end  = areas.length + end;
+        // 시작 > 끝인 경우엔 -1
+        if (start > end){
             answer.push(-1);
             continue;
-        }
-        const slice = areas.slice(startI, endIndex);
-        const sum = slice.reduce((acc, curr) => acc + curr, 0);
-        answer.push(sum);
+        };
+        
+        answer.push(areas.slice(start, end).reduce((acc, curr) => acc + curr, 0));
     }
+
     return answer;
 }
