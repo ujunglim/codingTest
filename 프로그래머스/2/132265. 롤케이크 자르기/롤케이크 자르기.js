@@ -1,37 +1,39 @@
-// 매번 자르면서 동생과 형 둘의 토핑갯수를 세는건 불필요하다
-// 처음부터 형한테 모든 토핑을 주고 그 후 토핑을 순회하며 동생이 하나씩 가져가면서 형과 동생의 토핑갯수를 비교한다.
-// 그냥 첨부터 순회하면서 하면 비교하면 안 되나?
+// 토핑은 일렬로 올려져있다
+// 동일한 토핑종류의 갯수를 갖게 나누는 방법 수
+
+// 둘로 나눔
+// topping 길이 1,000,000 => O( nlogn )
+// slice의 시간복잡도는 O(n) => 매번 잘라서 형과 동생의 토핑갯수를 구할 수 없다
+
+// 반으로 나누는게 아니라 토핑의 갯수를 비교하는거임
+// delete obj
+
 function solution(topping) {
     var answer = 0;
-    const old = {}; // 토핑 종류별 갯수
+    const old = {};
     const young = {};
-    let oldCount = 0; // 토핑 종류 갯수
+    topping.forEach(t => {
+        old[t] = (old[t] || 0) + 1;
+    })
+    let oldCount = Object.keys(old).length;
     let youngCount = 0;
     
-    for (const t of topping) {
-        if (!old[t]) {
-            old[t] = 1;
-            oldCount++;
-        } else {
-            old[t]++;
-        }
-    }
-    
-    for (const t of topping) {
-        if (!young[t]) {
-            young[t] = 1;
+    for (const curr of topping) {
+        // 동생은 없는 토핑
+        if (!young[curr]) {
             youngCount++;
+            young[curr] = 1;
         } else {
-            young[t]++;
+            young[curr]++; // 동생이 있는 토핑
         }
-        
-        // 토핑이 한개 남아있으면 형의 토핑 갯수는 감소한다.
-        if (old[t] === 1) {
+        // 형이 하나 밖에 없는 토핑이면
+        if (old[curr] === 1) {
+            delete old[curr];
             oldCount--;
+        } else {
+            old[curr]--;
         }
-        old[t]--; // 형의 토핑 감소
-        
-        // 형과 동생의 토핑갯수 비교
+        // 동생과 형의 토핑갯수가 같을시
         if (oldCount === youngCount) {
             answer++;
         }
