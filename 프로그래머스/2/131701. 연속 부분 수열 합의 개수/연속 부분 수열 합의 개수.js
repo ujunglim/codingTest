@@ -1,14 +1,18 @@
+// 원형수열 안 연속부분의 합으로 만들수 있는 수가 몇가지?
+// O^2 가능
+// 슬라이딩 윈도우
 function solution(elements) {
-    const set = new Set();
-    const cycle = elements.concat(elements)
-
-    for (let count = 1; count <= elements.length; count++) {
-        for (let startIndex = 0; startIndex < elements.length; startIndex++) {
-            // 시작인덱스에서 갯수만큼의 합을 구한다
-            const selected = [...cycle].splice(startIndex, count)
-            const sum = selected.reduce((acc, curr) => acc + curr, 0);
-            set.add(sum);
+    var set = new Set();
+    let windowLen = elements.length;
+    elements = elements.concat(elements);
+    
+    for (let startIndex = 0; startIndex < windowLen; startIndex++) {
+        let sum = 0;
+        for (let count = startIndex; count < startIndex + windowLen; count++) {
+            sum += elements[count];
+            set.add(sum)
         }
     }
+    // console.log(set)
     return set.size;
 }
