@@ -1,20 +1,15 @@
 function solution(numbers, target) {
     var answer = 0;
-    
-    function dfs(num, remainArr) {
-        if (!remainArr.length) {
-            if (num === target) {
-                console.log(num, remainArr)
-                answer++;
-            }
+    function dfs(remain, currSum) {
+        if (!remain.length) {
+            if (currSum === target) answer++;
             return;
         }
-        const curr = remainArr[0];
-        const newArr = [...remainArr];
-        newArr.shift();
-        dfs(num-curr, newArr);
-        dfs(num+curr, newArr);
+        const newRemain = [...remain];
+        const selected = newRemain.shift();
+        dfs(newRemain, currSum+selected);
+        dfs(newRemain, currSum-selected);
     }
-    dfs(0, numbers);
+    dfs(numbers, 0);
     return answer;
 }
