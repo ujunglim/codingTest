@@ -1,64 +1,80 @@
+// 다음달에 선물 최대 많이 받은 사람
+// 주고받은적 있음 더 많이 준 사람이 받음
+// 주고받은적 없거나 같으면 선물지수가 더 큰사람이 받음
+// 선물지수: 준 선물-받은선물
+// 선물지수도 같으면 암것도 안 함
 function solution(friends, gifts) {
-  var answer = {};
-  const n = friends.length;
-  const arr = Array.from({ length: n }, () =>
-    Array.from({ length: n }, () => 0)
-  );
-  const hash = {};
-
-  friends.forEach((friend, i) => {
-    hash[friend] = {
-      index: i,
-      gave: 0,
-      got: 0,
-    };
-  });
-  gifts.forEach((gift) => {
-    const [from, to] = gift.split(" ");
-    hash[from].gave += 1;
-    hash[to].got += 1;
-
-    //배열 정리
-    arr[hash[from].index][hash[to].index] += 1;
-  });
-  // 선물지수 정리
-  for (const [key, value] of Object.entries(hash)) {
-    hash[key].point = hash[key].gave - hash[key].got;
-  }
-  for (let i = 0; i < n - 1; ++i) {
-    for (let j = i + 1; j < n; ++j) {
-      const from = friends[i];
-      const to = friends[j];
-
-      // 기록이 없거나 선물갯수가 같을시
-      if ((arr[i][j] === 0 && arr[j][i] === 0) || arr[i][j] === arr[j][i]) {
-        // 선물지수 비교
-        const fromPoint = hash[from].point;
-        const toPoint = hash[to].point;
-        if (fromPoint > toPoint) {
-          answer[from] = (answer[from] || 0) + 1;
-        } else if (fromPoint < toPoint) {
-          answer[to] = (answer[to] || 0) + 1;
-        }
-      }
-      // 주고받은 기록이 있거나 선물갯수가 다를시
-      else if (
-        arr[i][j] ||
-        arr[j][i] ||
-        (arr[i][j] && arr[j][i] && arr[i][j] !== arr[j][i])
-      ) {
-        // 선물 갯수 비교
-        if (arr[i][j] > arr[j][i]) {
-          answer[from] = (answer[from] || 0) + 1;
-        } else if (arr[i][j] < arr[j][i]) {
-          answer[to] = (answer[to] || 0) + 1;
-        }
-      }
+    const obj = {};
+    const points = {}
+    const answer = {};
+    
+    friends.forEach(myName => {
+        const myFriends = friends.filter(e => e !== myName);
+        const relation = {};
+        myFriends.forEach(e => {
+            relation[e] = 0;
+        })
+        obj[myName] = {
+            gave: {...relation}, // ...
+            got: {...relation},
+        };
+    })
+    
+    gifts.forEach((gift) => {
+        const [from, to] = gift.split(' ');
+        obj[from]['gave'][to]++;
+        obj[to]['got'][from]++;
+    })
+    
+    for (const [name, history] of Object.entries(obj)) {
+        const {gave, got} = history;
+        const gaveCount = getCount(gave);
+        const gotCount = getCount(got);
+        points[name] = gaveCount - gotCount;
     }
-  }
-  const values = Object.values(answer);
-  if (values.length === 0) {
-    return 0;
-  }
-  return Math.max(...Array.from(values));
+    // console.log(obj, points)
+    console.log(friends)
+    
+    for (let i = 0; i < friends.length-1; i++) {
+        const person1 = friends[i];
+        for (let j = i+1; j < friends.length; j++) {
+            const person2 = friends[j];
+            
+            const person1GaveCount = obj[person1].gave[person2];
+            const person2GaveCount = obj[person2].gave[person1];
+            
+            if (person1GaveCount > person2GaveCount) {
+                answer[person1] = (answer[person1] || 0) + 1;
+            } else if (person1GaveCount < person2GaveCount) {
+                answer[person2] = (answer[person2] || 0) + 1;
+            } else {
+                const person1Point = points[person1];
+                const person2Point = points[person2];
+                
+                if (person1Point > person2Point) {
+                    answer[person1] = (answer[person1] || 0) + 1;
+                } else if(person1Point < person2Point) {
+                    answer[person2] = (answer[person2] || 0) + 1;
+                }
+            }
+        }
+    }
+    if(!Object.keys(answer).length) return 0;
+    return Math.max(...Object.values(answer));
+}
+
+function getCount(obj) {
+    let result = 0;
+    for (const [key, value] of Object.entries(obj)) {
+        if (value) {
+            result += value;
+        }
+    }
+    return result;
+}
+    
+function hasRelation(obj, person) {
+    const {gave, got} = obj;
+    // 주거나 받은 기록이 있음
+    return gave[person] || got[person];
 }
