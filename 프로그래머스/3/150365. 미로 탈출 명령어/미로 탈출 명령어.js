@@ -4,46 +4,55 @@
 // 미로 탈출 경로 중 사전순으로 가장 빠른 경로를 구해라
 // 좌측상단이 0,0 .는 빈 공간, s출발, e탈출
 
+// 경로dfs, 최단
 function solution(n, m, x, y, r, c, k) {
-    var answer = '';
-    const dir = {0: 'd', 1: 'l', 2: 'r', 3: 'u'};
-    const result = [];
-    const dx = [1,0,0,-1];
-    const dy = [0,-1,1,0];
-    const board = Array.from({length: n}, () => Array.from({length: m}, () => '.'));
-    board[x-1][y-1] = 'S';
-    board[r-1][c-1] = 'E';
-    
-    const getMHdist = (a,b,c,d) => {
-        return Math.abs(a-c) + Math.abs(b-d);
+  const board = Array.from({ length: n }, () =>
+    Array.from({ length: m }, () => ".")
+  ); // 이차배열 생성
+  board[x - 1][y - 1] = "S"; // 시작점
+  board[r - 1][c - 1] = "E"; // 탈출점
+  const moveDir = ["d", "l", "r", "u"]; // 사전순
+  const dr = [1, 0, 0, -1]; // dlru순으로
+  const dc = [0, -1, 1, 0];
+  const shortestDist = getMHdistance(x, y, r, c);
+  const result = [];
+
+  // 최소 맨하튼 거리가 이동할 수 있는 거리인 k보다 크거나 거리자체가 도달 못 하는 거리인경우 (홀짝)
+  if (shortestDist > k || shortestDist % 2 !== k % 2) {
+    return "impossible";
+  }
+
+  function getMHdistance(a, b, c, d) {
+    return Math.abs(a - c) + Math.abs(b - d);
+  }
+
+  dfs(x - 1, y - 1, "");
+  return result[0];
+
+  function dfs(currR, currC, route) {
+    if (result.length > 0) return;
+    if (route.length > k) return;
+
+    // 현재까지 이동한 거리 + 도착지까지 남은 거리가 k보다 큰 경우
+    if (k < route.length + getMHdistance(currR, currC, r - 1, c - 1)) {
+      return;
     }
-    const fastAnswer = k-getMHdist(x,y,r,c);
-    if (fastAnswer < 0 || fastAnswer % 2 !== 0) return 'impossible';
-    
-    dfs(x-1, y-1, '');
-    return result[0];
-    
-    function dfs(currR, currC, route) {
-        if (result.length > 0) return;
-        if (route.length > k) return;
-        
-        if (getMHdist(currR, currC, r-1, c-1) + route.length > k) {
-            return;
-        }
-        
-        if (route.length === k && currR === r-1 && currC === c-1) {
-            result.push(route);
-            return;
-        }
-        
-        for (let i = 0; i < 4; i++) {
-            let nextR = currR  + dx[i];
-            let nextC = currC + dy[i];
-            if (nextR >= 0 && nextR < n && nextC >= 0 && nextC < m) {
-                dfs(nextR, nextC, route + dir[i]);
-            }
-        }
+
+    // k번 이동해서 목적지에 도달한경우
+    if (route.length === k && board[currR][currC] === "E") {
+      result.push(route);
+      return;
     }
-    
-    return answer;
+    // // k번이상 이동한 경우
+    // if (route.length >= k) return;
+
+    for (let i = 0; i < 4; i++) {
+      const nextR = currR + dr[i];
+      const nextC = currC + dc[i];
+
+      if (nextR >= 0 && nextR < n && nextC >= 0 && nextC < m) {
+        dfs(nextR, nextC, route + moveDir[i]);
+      }
+    }
+  }
 }
