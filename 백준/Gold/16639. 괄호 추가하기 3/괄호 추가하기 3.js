@@ -1,11 +1,12 @@
 // 입력 처리
-const file = '/dev/stdin';
+const file = "/dev/stdin";
 // const file = "test.txt";
 
 let input = require("fs").readFileSync(file).toString().trim().split("\n");
 const N = parseInt(input[0]);
 const equation = input[1];
 
+// 초기화 dp[i][i] = i
 let maxdp = Array.from({ length: N }, () =>
   Array.from({ length: N }, () => -Infinity)
 );
@@ -13,7 +14,6 @@ let mindp = Array.from({ length: N }, () =>
   Array.from({ length: N }, () => Infinity)
 );
 
-// 초기화 dp[i][i] = i
 for (let i = 0; i < N; i++) {
   if (!isNaN(parseInt(equation[i]))) {
     maxdp[i][i] = parseInt(equation[i]);
@@ -21,7 +21,8 @@ for (let i = 0; i < N; i++) {
   }
 }
 
-let res = dp(0, N - 1);
+// top to bottom
+dp(0, N - 1);
 console.log(maxdp[0][N - 1]);
 
 // i에서 j까지 [최소, 최대] 리턴
@@ -32,16 +33,16 @@ function dp(i, j) {
     return [mindp[i][j], maxdp[i][j]];
   }
 
-  for (let k = i + 1; k < j; k += 2) {
-    let ops = equation[k];
-    let [frontMin, frontMax] = dp(i, k - 1);
-    let [backMin, backMax] = dp(k + 1, j);
+  for (let mid = i + 1; mid < j; mid += 2) {
+    let ops = equation[mid];
+    let [leftMin, leftMax] = dp(i, mid - 1);
+    let [rightMin, rightMax] = dp(mid + 1, j);
 
     const calRes = [];
-    calRes.push(calc(frontMax, backMax, ops));
-    calRes.push(calc(frontMax, backMin, ops));
-    calRes.push(calc(frontMin, backMax, ops));
-    calRes.push(calc(frontMin, backMin, ops));
+    calRes.push(calc(leftMax, rightMax, ops));
+    calRes.push(calc(leftMax, rightMin, ops));
+    calRes.push(calc(leftMin, rightMax, ops));
+    calRes.push(calc(leftMin, rightMin, ops));
     calRes.sort((a, b) => a - b);
 
     maxdp[i][j] = Math.max(maxdp[i][j], calRes[3]);
