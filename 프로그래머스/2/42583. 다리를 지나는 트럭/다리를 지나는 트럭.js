@@ -1,29 +1,33 @@
+// 나가고 들어가고 큐
+// 길이 주어짐 큐 만듦
 function solution(bridge_length, weight, truck_weights) {
-    var answer = 0;
-    let passing = [];
-    let sum = 0; // 다리 위에 있는 차 무게의 합
+    // 초기화
+    const bridge = Array.from({length: bridge_length}, () => 0);
+    const firstEnterW = truck_weights.shift();
+    bridge.shift();
+    bridge.push(firstEnterW);
+    let sumW = firstEnterW; // 다리 위 총 무게
+    var answer = 1;
     
-    // 대기 트럭이 있던가 지나가고 있는 트럭이 있는 동안
-    while(truck_weights.length || passing.length) {
-        answer++; // 먼저 시간이 흐르고
+    // 다리 위에 차가 있거나 아직 못 통과한 트럭이 있는 경우
+    while(sumW > 0 || truck_weights.length) {
+        // console.log(bridge)
+        answer++; // 시간추가
         
-        // 다리위의 트럭을 한칸씩 이동
-        if (passing.length) {
-            passing = passing.map(([w, i]) => [w, i+1]);
-        }
+        // 맨 앞 트럭 다리 통과
+        sumW -= bridge.shift();
         
-        // 다리를 지나친 트럭이 있으면 빼준다
-        if (passing.length && passing[0][1] > bridge_length) {
-            const [w, location] = passing.shift();
-            sum -= w;
-        }
-        
-        // 다음 차가 올라올 수 있음 올라온다
-        if (sum + truck_weights[0] <= weight) {
-            const next = truck_weights.shift();
-            sum += next;
-            passing.push([next, 1]);
+        // 다음 트럭 더 올릴 수 있는 경우
+        const nextW = truck_weights[0];
+        if (sumW + nextW <= weight) {
+            sumW += nextW;
+            truck_weights.shift();
+            bridge.push(nextW);
+        } else {
+            // 다음 트럭 못 올리는 경우
+            bridge.push(0);
         }
     }
+    
     return answer;
 }
