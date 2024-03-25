@@ -1,13 +1,22 @@
+// + 거나 -  한 자릿수씩
 function solution(storey) {
-    let ary = [0, ...[...storey+''].map(v => +v)]
-    
-    for (let i=ary.length-1 ; i>0 ; i--){
-        if (ary[i] < 5) continue
-        else if (ary[i] === 5 && ary[i-1] < 5) continue
+    var answer = 0;
+    while(storey > 0) {
+        const digit = storey % 10;
+        storey = Math.floor(storey / 10);
         
-        ary[i] = 10 - ary[i]
-        ary[i-1] ++;
-        
+        if (digit < 5) {
+            answer += digit;
+        } else if (digit > 5) {
+            answer += 10 - digit;
+            storey += 1; // 윗 자리수 추가
+        } else {
+            // 5일땐 윗 자리수 확인
+            if (storey % 10 >= 5) {
+                storey += 1;
+            }
+            answer += digit;
+        }
     }
-    return ary.reduce((a,c) => a+c , 0)
+    return answer;
 }
