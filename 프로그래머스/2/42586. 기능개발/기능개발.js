@@ -1,22 +1,22 @@
 function solution(progresses, speeds) {
     var answer = [];
-    const needArr = progresses.map((p, i) => Math.ceil((100-p) / speeds[i]));
-    const queue = [];
-    
-    for (const need of needArr) {
-        if (!queue.length) {
-            queue.push(need);
-            answer.push(1)
+    const needArr = [];
+    for (let i = 0; i < progresses.length; i++) {
+        needArr.push(Math.ceil((100-progresses[i])/speeds[i]));
+    }
+    let currMax = -Infinity
+    for (let i = 0; i < needArr.length; i++) {
+        if (!answer.length) {
+            answer.push(1);
+            currMax = needArr[i];
             continue;
         }
-        // 전보다 시간이 더 많이 걸릴 경우
-        if (queue[queue.length-1] < need) {
-            queue.push(need);
-            answer.push(1);
-        } else {
+        if (currMax >= needArr[i]) {
             answer[answer.length-1] += 1;
+        } else {
+            answer.push(1);
+            currMax = needArr[i];
         }
     }
-    
     return answer;
 }
