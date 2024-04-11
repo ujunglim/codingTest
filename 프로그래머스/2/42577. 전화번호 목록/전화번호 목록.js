@@ -1,25 +1,21 @@
+// 접두어이면 false, 아니면 true
 function solution(phone_book) {
-    var answer = true;
-    const prefixHash = new Set();
-    const lenHash = new Set();
-    phone_book.sort((a, b) => a.length-b.length);
+    phone_book.sort((a, b) => a.length - b.length); // 긴 번호대로 sort
+    const hash = new Set();
     
-    for (const phone of phone_book) {
-        if (lenHash.size === 0) {
-            lenHash.add(phone.length);
-            prefixHash.add(phone);
+    for (const pb of phone_book) {
+        if (!hash.size) {
+            hash.add(pb);
             continue;
         }
-        // 갯수별 체크
-        for (let len of [...lenHash]) {
-            const currPrefix = phone.substr(0, len);
-            if (prefixHash.has(currPrefix)) {
+        
+        for (let i = 1; i < pb.length; i++) {
+            const slice = pb.slice(0, i);
+            if (hash.has(slice)) {
                 return false;
             }
         }
-        // 추가
-        lenHash.add(phone.length);
-        prefixHash.add(phone)
+        hash.add(pb);
     }
     return true;
 }
