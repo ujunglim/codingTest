@@ -1,15 +1,19 @@
 function solution(numbers, target) {
     var answer = 0;
-    function dfs(remain, currSum) {
-        if (!remain.length) {
-            if (currSum === target) answer++;
+    
+    function dfs(curr, remain) {
+        if (!remain.length ) {
+            if (curr === target) {
+                answer++;
+            }
             return;
         }
         const newRemain = [...remain];
         const selected = newRemain.shift();
-        dfs(newRemain, currSum+selected);
-        dfs(newRemain, currSum-selected);
+        dfs(curr+selected, newRemain);
+        dfs(curr-selected, newRemain);
     }
-    dfs(numbers, 0);
+    dfs(0, numbers);
+    
     return answer;
 }
