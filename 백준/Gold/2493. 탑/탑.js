@@ -34,13 +34,6 @@ for (let i = 0; i < arr.length - 1; i++) {
     if (curr.num > next.num) {
       stack.push(curr);
     }
-    // else {
-    //   // 현재 < 미래면
-    //   while (stack.length && before.num < curr.num) {
-    //     console.log("====", stack);
-    //     stack.pop();
-    //   }
-    // }
   } else {
     // 이전 < 현재이면 현재보다 큰 탑을 찾을 때까지 pop
     while (stack.length && stack[stack.length - 1].num < curr.num) {
