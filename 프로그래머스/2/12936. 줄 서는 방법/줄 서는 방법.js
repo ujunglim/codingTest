@@ -11,20 +11,21 @@ function solution(n, k) {
   }
   getFactorialArr(n);
 
+  // 남은 자릿수, k번째, 누적
   function bt(n, k, acc) {
     if (n === 0) {
       answer = acc.concat(arr);
       return;
     }
-
-    let selectedIndex = Math.floor(k / factorialArr[n - 1]);
-    // const selectedIndex = Math.floor((k - 1) / factorialArr[n - 1]);
-    k = k % factorialArr[n - 1];
+    let group = Math.floor(k / factorialArr[n - 1]);
+      
+    k = k % factorialArr[n - 1]; // 나머지: 그룹 안에서 몇 번째
+    // 
     if (k === 0) {
-      selectedIndex--;
+      group--;
     }
 
-    bt(n - 1, k, [...acc, ...arr.splice(selectedIndex, 1)]);
+    bt(n - 1, k, [...acc, ...arr.splice(group, 1)]);
   }
 
   bt(n, k, []);
